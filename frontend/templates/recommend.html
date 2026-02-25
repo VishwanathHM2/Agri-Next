@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container my-5">
+
+  <h2 class="text-center mb-5 text-primary fw-bold">{{ lang.get("recommend_title","Crop Recommendation") }}</h2>
+
+  <!-- Recommendation Form Card -->
+  <div class="card shadow-lg p-5 mb-5 rounded-4" style="background: linear-gradient(145deg, #f7f9fc, #e9f1f8);">
+    <form method="post">
+      <div class="row g-3">
+
+        <!-- Region Input -->
+        <div class="col-md-3">
+          <label class="form-label text-primary fw-semibold">Region</label>
+          <input class="form-control form-control-lg" name="region" placeholder="Enter region" required/>
+        </div>
+
+        <!-- NPK Inputs -->
+        <div class="col-md-2">
+          <label class="form-label text-success fw-semibold">N</label>
+          <input class="form-control form-control-lg" name="N" placeholder="Nitrogen"/>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label text-warning fw-semibold">P</label>
+          <input class="form-control form-control-lg" name="P" placeholder="Phosphorus"/>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label text-danger fw-semibold">K</label>
+          <input class="form-control form-control-lg" name="K" placeholder="Potassium"/>
+        </div>
+
+        <!-- pH, Temp, Humidity, Rainfall -->
+        <div class="col-md-2">
+          <label class="form-label text-info fw-semibold">pH</label>
+          <input class="form-control form-control-lg" name="pH" placeholder="pH"/>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label text-indigo fw-semibold">Temp</label>
+          <input class="form-control form-control-lg" name="temp" placeholder="°C"/>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label text-secondary fw-semibold">Humidity</label>
+          <input class="form-control form-control-lg" name="humidity" placeholder="%"/>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label text-info fw-semibold">Rainfall</label>
+          <input class="form-control form-control-lg" name="rainfall" placeholder="mm" readonly/>
+        </div>
+
+      </div>
+
+      <!-- Buttons -->
+      <div class="row mt-4 g-3">
+        <div class="col-md-6">
+          <button class="btn btn-gradient-primary btn-lg w-100 fw-bold">Get Recommendation</button>
+        </div>
+        <div class="col-md-6">
+          <button type="button" class="btn btn-outline-secondary btn-lg w-100 fw-bold" id="manualRainfall">Input Rainfall Manually</button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+  {% if result %}
+  <!-- Result Section -->
+  <div class="card shadow-lg p-5 rounded-4" style="background: #ffffff;">
+    <h4 class="mb-4 text-center">Recommended Crop: <span class="text-success fw-bold">{{ result.prediction }}</span></h4>
+
+    <h5 class="mb-3 text-center text-muted">Probability Ranking</h5>
+    <div class="mt-3">
+      {% for r in result.ranking %}
+        {% if r.prob > 0 %}
+        <div class="mb-3">
+          <div class="d-flex justify-content-between fw-medium">
+            <span>{{ r.crop }}</span>
+            <span>{{ (r.prob * 100)|round(1) }}%</span>
+          </div>
+          <div class="progress" style="height: 15px; border-radius: 10px;">
+            <div class="progress-bar bg-success" role="progressbar" style="width: {{ (r.prob * 100)|round(1) }}%" aria-valuenow="{{ (r.prob * 100)|round(1) }}" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+
+<style>
+/* Hover effects and gradients */
+.hover-scale:hover {
+  transform: scale(1.03);
+  transition: 0.3s;
+}
+
+.btn-gradient-primary {
+  background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+  border: none;
+  transition: 0.3s;
+}
+
+.btn-gradient-primary:hover {
+  background: linear-gradient(90deg, #00f2fe 0%, #4facfe 100%);
+}
+
+.form-control-lg {
+  border-radius: 12px;
+}
+</style>
+
+<script>
+async function fillRainfall() {
+  const region = document.querySelector('input[name="region"]').value;
+  if (!region) return;
+
+  try {
+    const res = await fetch("/api/rainfall", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({region})
+    });
+    const data = await res.json();
+    if (data.average_rainfall_mm !== undefined) {
+      const rainfallInput = document.querySelector('input[name="rainfall"]');
+      if (rainfallInput.readOnly) {
+        rainfallInput.value = data.average_rainfall_mm;
+      }
+    }
+  } catch (e) {
+    console.error("Error fetching rainfall:", e);
+  }
+}
+
+document.querySelector('input[name="region"]').addEventListener('blur', fillRainfall);
+
+document.getElementById('manualRainfall').addEventListener('click', () => {
+  const rainfallInput = document.querySelector('input[name="rainfall"]');
+  rainfallInput.readOnly = false;
+  rainfallInput.focus();
+});
+</script>
+{% endblock %}

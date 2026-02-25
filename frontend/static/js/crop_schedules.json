@@ -1,0 +1,27 @@
+{
+  "rice": {
+    "duration_days": 120,
+    "watering_weeks": 6,
+    "fertilizer_days": [20, 40, 60]
+  },
+  "wheat": {
+    "duration_days": 140,
+    "watering_weeks": 8,
+    "fertilizer_days": [30, 70]
+  },
+  "maize": {
+    "duration_days": 110,
+    "watering_weeks": 5,
+    "fertilizer_days": [25, 50, 75]
+  },
+  "sugarcane": {
+    "duration_days": 300,
+    "watering_weeks": 20,
+    "fertilizer_days": [60, 120, 180]
+  },
+  "soybean": {
+    "duration_days": 100,
+    "watering_weeks": 5,
+    "fertilizer_days": [25, 50]
+  }
+}

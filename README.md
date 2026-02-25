@@ -1,0 +1,1 @@
+# AgriNext--Ai-based-crop-recommendation-for-farmers

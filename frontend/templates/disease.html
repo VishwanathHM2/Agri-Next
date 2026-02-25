@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container my-4">
+
+  <h3 class="mb-4">{{ lang.get("disease_title","Disease Detection") }}</h3>
+
+  <!-- Upload Form Card -->
+  <div class="card shadow-sm p-4 mb-4 hover-scale">
+    <form method="post" enctype="multipart/form-data">
+      <div class="mb-3">
+        <label class="form-label">Upload Leaf Image</label>
+        <input type="file" name="image" accept="image/*" class="form-control"/>
+      </div>
+      <button class="btn btn-primary btn-lg hover-scale w-100">Upload & Detect</button>
+    </form>
+  </div>
+
+  {% if preds %}
+  <!-- Predictions Section -->
+  <div class="row g-3">
+    {% for p in preds %}
+      {% if p.prob > 0 %}
+      <div class="col-md-6 col-lg-4">
+        <div class="card shadow-sm hover-scale">
+          <div class="card-header bg-danger text-white">
+            {{ p.class }}
+          </div>
+          <div class="card-body p-2">
+            <p class="mb-1"><strong>Probability:</strong> {{ (p.prob*100)|round(1) }}%</p>
+            <p class="mb-0"><strong>Suggestion:</strong> {{ p.get('pesticide','-') }}</p>
+            <div class="progress mt-2">
+              <div class="progress-bar bg-danger" role="progressbar" style="width: {{ (p.prob*100)|round(1) }}%" aria-valuenow="{{ (p.prob*100)|round(1) }}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  {% if img_url %}
+  <div class="mt-4 text-center">
+    <h5>Uploaded Image:</h5>
+    <img src="{{ img_url }}" class="img-fluid rounded shadow-sm" style="max-height:400px;"/>
+  </div>
+  {% endif %}
+  {% endif %}
+
+</div>
+
+<style>
+.hover-scale:hover {
+  transform: scale(1.02);
+  transition: 0.3s;
+}
+</style>
+{% endblock %}

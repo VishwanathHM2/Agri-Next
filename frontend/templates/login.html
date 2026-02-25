@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container my-5">
+  <div class="row justify-content-center align-items-start" style="margin-top: 50px;">
+
+    <!-- Card -->
+    <div class="col-md-8">
+      <div class="card shadow-lg rounded-4 overflow-hidden">
+        <div class="row g-0">
+
+          <!-- Left Side (Login) -->
+          <div class="col-md-6 p-4 bg-light">
+            <h3 class="mb-4 text-center">Login</h3>
+            <form method="post">
+              <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input class="form-control" name="username" placeholder="Enter username" required/>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input class="form-control" name="password" type="password" placeholder="Enter password" required/>
+              </div>
+              <button class="btn btn-primary w-100 py-2 fw-bold hover-scale">Login</button>
+            </form>
+          </div>
+
+          <!-- Right Side (Register) -->
+          <div class="col-md-6 p-4 text-white" style="background: linear-gradient(135deg, #4CAF50, #2E7D32);">
+            <h3 class="mb-4 text-center">New Here?</h3>
+            <p class="text-center">Create an account and start using CropNext to optimize your farming decisions!</p>
+            <form method="post" action="{{ url_for('register') }}">
+              <div class="mb-3">
+                <input class="form-control" name="username" placeholder="Username" required/>
+              </div>
+              <div class="mb-3">
+                <input class="form-control" name="password" type="password" placeholder="Password" required/>
+              </div>
+              <button class="btn btn-light w-100 py-2 fw-bold hover-scale">Register</button>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<style>
+.hover-scale:hover {
+  transform: scale(1.05);
+  transition: 0.3s;
+}
+.min-vh-80 { min-height: 80vh; }
+</style>
+{% endblock %}

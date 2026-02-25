@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+venv/
+
+# Database
+*.db
+
+# ML Models
+*.pkl
+*.joblib
+*.h5
+*.keras
+
+# Dataset
+data/
+*.csv
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

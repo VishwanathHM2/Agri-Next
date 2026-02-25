@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container my-4">
+
+  <!-- Hero Section -->
+  <div class="p-5 mb-4 bg-light rounded-3 text-center shadow-sm">
+    <h1 class="display-5 fw-bold">{{ lang.get("welcome","Welcome to CropNext") }}</h1>
+    <p class="lead">{{ lang.get("intro","Use soil, weather & market info to pick the best crop.") }}</p>
+    <a class="btn btn-primary btn-lg me-2" href="{{ url_for('login') }}">Login / Register</a>
+    <a class="btn btn-success btn-lg" href="{{ url_for('recommend_page') }}">Try Recommendation</a>
+  </div>
+
+  <div class="row g-4">
+
+    <!-- Market Trends Section -->
+    <div class="col-lg-4">
+      <h3 class="mb-3">Top Market Trends(per quintal)</h3>
+      <div id="market-trends" class="row g-2">
+        <!-- Cards populated via JS -->
+      </div>
+    </div>
+
+    <!-- Crop Profit Chart Section -->
+    <div class="col-lg-8">
+      <h3 class="mb-3">Crop Price Overview</h3>
+      <canvas id="profitChart" height="300"></canvas>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- JS for market trends -->
+<script>
+fetch('/api/market_trends')
+  .then(res => res.json())
+  .then(data => {
+    const container = document.getElementById('market-trends');
+    container.innerHTML = data.trends.map(t => `
+      <div class="col-12">
+        <div class="card shadow-sm hover-scale">
+          <div class="card-body p-2">
+            <h6 class="card-title mb-1">${t.crop}</h6>
+            <p class="card-text mb-0">Price: ₹${t.price}</p>
+            <small class="text-muted">Source: ${t.source} | ${t.date}</small>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    // Prepare data for chart
+    const labels = data.trends.map(t => t.crop);
+    const prices = data.trends.map(t => t.price);
+
+    const ctx = document.getElementById('profitChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Latest Price (₹)',
+          data: prices,
+          backgroundColor: 'rgba(75, 192, 192, 0.6)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+  })
+  .catch(err => console.error(err));
+</script>
+
+<!-- Extra CSS -->
+<style>
+.hover-scale:hover {
+  transform: scale(1.02);
+  transition: 0.3s;
+}
+</style>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
